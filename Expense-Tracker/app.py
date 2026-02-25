@@ -22,7 +22,10 @@ class tracker_app:
     #     return parse.parse_args()
     def display(self, data: list) -> None:
         temp = [list(row.values()) for row in data]
-        print(temp)
+        for row in range(len(temp)):
+            print(f"""
+               | {temp[row][0]} | {temp[row][1]} | {temp[row][2]} | {temp[row][3]} |
+            """)
 
     def re_index(self) -> None:
         with open(self.file, mode='r') as file:
