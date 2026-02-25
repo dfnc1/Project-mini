@@ -20,12 +20,14 @@ class tracker_app:
     #     parse.add_argument("add" )
     #
     #     return parse.parse_args()
-    def display(self, data: list) -> None:
-        temp = [list(row.values()) for row in data]
-        for row in range(len(temp)):
-            print(f"""
-               | {temp[row][0]} | {temp[row][1]} | {temp[row][2]} | {temp[row][3]} |
-            """)
+    def list(self) -> None:
+        with open(self.file, mode='r') as file:
+            reader = csv.DictReader(file, fieldnames=self.fields)
+            data: list[dict] = [row for row in reader]
+            temp: list[list] = [list(row.values()) for row in data]
+            print("ID\tDate\t\t\tDescription\t\t\t\tAmount")
+            for row in range(len(temp)):
+                print(f" {temp[row][0]:5}  {temp[row][1]}  \t{temp[row][2]:30}  \t{temp[row][3]} ")
 
     def re_index(self) -> None:
         with open(self.file, mode='r') as file:
@@ -52,8 +54,4 @@ class tracker_app:
             }
             writer.writerow(new_data)
 
-    def list(self):
-        with open(self.file, "r") as file:
-            reader = csv.DictReader(file, fieldnames=self.fields)
-
-tracker_app("hari ini gacoan", 50).re_index()
+tracker_app("hari ini gacoan", 50).list()
