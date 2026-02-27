@@ -1,64 +1,86 @@
 import csv
+from collections.abc import Iterator
 from datetime import datetime
-from xxlimited_35 import Null
-
 
 class tracker_app:
 
     def __init__(self) -> None:
+
         self.date: datetime = datetime.now()
         self.fields: list = ['Id','Date', 'Description', 'Amount']
         self.file: str = 'data.csv'
 
-    def re_index(self) -> None:
-
+    def read_file(self) -> Iterator[list[str]] :
         with open(self.file, mode='r') as file:
-            reader = csv.DictReader(file, fieldnames=self.fields)
-            data = [row for row in reader]
-            new_id = [index for index in range(1, len(data) + 1)]
+            csv_read = csv.reader(file)
 
-        with open(self.file, mode='w') as file:
-            writer = csv.DictWriter(file, fieldnames=self.fields)
-            new_data = [row|{"Id": new}  for row, new in zip(data, new_id) ]
-            writer.writerows(new_data)
+            data = (row for row in csv_read)
+
+            for row in data:
+                yield row
+
+    def write_file(self, mode: str, data) -> None:
+        with open(self.file, mode=mode, newline='') as file:
+
+            writer = csv.writer(file)
+
+            if mode == 'w':
+                writer.writerows(data)
+            elif mode == 'a':
+                writer.writerow(data)
+
+    def re_index(self) -> None:
+        reader = self.read_file()
+
+        data = [index for index in reader]
+
+        for i, row in enumerate(data):
+            data[i][0] = str(i+1)
+
+        self.write_file('w', data)
 
     def add(self, description: str, amount: float) -> None:
+        reader = self.read_file()
 
-        with open(self.file, "r+") as file:
-            reader = csv.DictReader(file, fieldnames=self.fields)
-            writer = csv.DictWriter(file, fieldnames=self.fields)
-            ids: list[int] = [int(row["Id"]) for row in reader]
-            last_id: int = ids[-1]+1 if ids else 1
-            new_data: dict = {
-                'Id': last_id ,
-                'Date': self.date.strftime('%d-%b-%Y %I:%M %p'),
-                'Description': description,
-                'Amount': amount
-            }
-            writer.writerow(new_data)
+        ids: list[int] = [int(row[0]) for row in reader]
 
+        last_id: int = ids[-1]+1 if ids else 1
+
+        new_data: list[str] = [
+            last_id ,
+            self.date.strftime('%d-%m-%Y %I:%M %p'),
+            description,
+            amount
+        ]
+
+        self.write_file('a', new_data)
 
     def list(self) -> None:
+        reader = self.read_file()
 
-        with open(self.file, mode='r') as file:
-            reader = csv.DictReader(file, fieldnames=self.fields)
-            data: list[list] = [list(row.values()) for row in [row for row in reader]]
-
-            print("ID\tDate\t\t\tDescription\t\t\t\tAmount")
-            for row in range(len(data)):
-                print(f" {data[row][0]:5}  {data[row][1]}  \t{data[row][2]:30}  \t{data[row][3]} ")
+        print("ID\tDate\t\t\tDescription\t\t\t\tAmount")
+        for row in reader:
+            print(f" {row[0]:5}  {row[1]}  \t{row[2]:30}  \t${row[3]} ")
 
     def delete(self, id: int) -> None:
-        with open(self.file, mode='r+') as file:
-            reader = csv.DictReader(file, fieldnames=self.fields)
-            data: list[list] = [list(row.values()) for row in [row for row in reader]]
+        reader = self.read_file()
+        temp = []
 
-            for row in range(len(data)):
-                if data[row][0] == id:
-                    del data[row]
-            print(data)
+        for row in reader:
+            if int(row[0]) != id:
+                temp.append(row)
 
+        self.write_file('w', temp)
 
+        self.re_index()
+        print("Expense deleted succesfully")
 
+    def sum(self):
+        reader = self.read_file()
+        count = 0
 
-tracker_app().add("lunch", 20)
+        for row in reader:
+            count += int(row[3])
+
+        print(f"Total expenses: ${count}")
+
