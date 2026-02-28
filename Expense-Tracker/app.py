@@ -6,37 +6,36 @@ class tracker_app:
 
     def __init__(self) -> None:
         self.date: datetime = datetime.now()
-        self.file: str = 'data.csv'
+        self.file: str = 'dat.csv'
 
     def read_file(self) -> Iterator[list[str]] :
         with open(self.file, mode='r', newline='') as file:
             yield from csv.reader(file)
 
-    def write_file(self, mode: str, data) -> None:
+    def write_file(self, mode: str , data) -> None:
         with open(self.file, mode=mode, newline='') as file:
             writer = csv.writer(file)
 
             if mode == 'w':
                 writer.writerows(data)
-            elif mode == 'a':
+            else:
                 writer.writerow(data)
 
     def re_index(self) -> None:
         reader = self.read_file()
 
-        data = [index for index in reader]
-        for i, row in enumerate(data):
-            data[i][0] = str(i+1)
+        rows = [row for row in reader]
+        for i, row in enumerate(rows):
+            rows[i][0] = str(i+1)
 
-        self.write_file('w', data)
+        self.write_file('w', rows)
 
-    def next_id(self):
+    def next_id(self) -> int:
         last_id = 0
         for row in self.read_file():
             last_id = int(row[0])
 
         return last_id +1
-
 
     def add(self, description: str, amount: float) -> None:
         new_data: list[str] = [
@@ -71,4 +70,3 @@ class tracker_app:
                 count += int(row[3])
 
         print(f"Total expenses: ${count}")
-
