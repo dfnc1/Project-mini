@@ -1,6 +1,7 @@
 # Blogging Platform API
 
 ---
+A simple REST API for a blogging platform built with FastAPI and PostgreSQL.
 
 ## Requirements
 
@@ -18,19 +19,29 @@
 git clone https://github.com/dfnc1/Mini-Project-Python.git
 cd ./Mini-Project-Python/Blogging-Platform-API/
 ```
-2. Install UV
-```commandline
-pip install uv
-```
-3. Install Depedencies 
+2. Install Depedencies 
 ```commandline
 uv sync
 ```
-4. Create .env file 
-```.dotenv
-DB_URL="postgresql://username:password@host:port/db-name"
+3. Activate Virtual Environment
+```commandline
+source .venv/bin/activate
+```
+4. Create `.env` file and add this line
+```dotenv
+DB_URL="postgresql://username:password@localhost:port/db-name"
 ```
 5. Run App
 ```commandline
 uvicorn main:app --reload
 ```
+
+## Endpoints
+
+| Method | Endpoint      | Deskripsi          |
+|--------|---------------|--------------------|
+| GET    | /posts        | Ambil semua post   |
+| GET    | /posts/{id}   | Detail post        |
+| POST   | /posts        | Buat post baru     |
+| PUT    | /posts/{id}   | Update post        |
+| DELETE | /posts/{id}   | Hapus post         |
