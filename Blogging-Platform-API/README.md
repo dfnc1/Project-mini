@@ -38,10 +38,16 @@ uvicorn main:app --reload
 
 ## Endpoints
 
-| Method | Endpoint      | Deskripsi          |
-|--------|---------------|--------------------|
-| GET    | /posts        | Ambil semua post   |
-| GET    | /posts/{id}   | Detail post        |
-| POST   | /posts        | Buat post baru     |
-| PUT    | /posts/{id}   | Update post        |
-| DELETE | /posts/{id}   | Hapus post         |
+| Method | Endpoint      | Description       |
+|--------|---------------|-------------------|
+| GET    | /posts        | Get all posts     |
+| GET    | /posts/{id}   | Get post by ID    |
+| POST   | /posts        | Create a new post |
+| PUT    | /posts/{id}   | Update a post     |
+| DELETE | /posts/{id}   | Delete a post     |
+
+## API Documentation
+
+Once the server is running, open:
+
+http://127.0.0.1:8000/docs
