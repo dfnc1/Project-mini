@@ -1,14 +1,14 @@
 from pydantic import BaseModel
 
 class User(BaseModel):
-    username: str
+    name: str
     email: str
 
 class UserInDB(User):
     hashed_password: str
 
 class Register(BaseModel):
-    username: str
+    name: str
     email: str
     password: str
 
@@ -17,7 +17,7 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: str
+    email: str
 
 class Post(BaseModel):
     title: str

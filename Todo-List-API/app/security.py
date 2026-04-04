@@ -40,20 +40,20 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], conn):
     )
     try:
         payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=[os.getenv("ALGORITHM")])
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(email=email)
     except InvalidTokenError:
         raise credentials_exception
 
-    user = get_user(username= token_data.username, conn=conn)
+    user = get_user(email= token_data.email, conn=conn)
     if user is None:
         raise credentials_exception
     return user
 
-async def authenticate_user(username: str, password: str, conn):
-    user = await get_user(username, conn)
+async def authenticate_user(email: str, password: str, conn):
+    user = await get_user(email, conn)
     if not user:
         return False
     if not verify_password(password, user["password"]):
