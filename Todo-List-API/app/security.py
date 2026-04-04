@@ -10,17 +10,17 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 
 from .schemas import TokenData
-from . import get_user
+from .repository import get_user
 
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 password_hash = PasswordHash.recommended()
 
 def get_password_hash(password):
-    return password_hash. hash(password)
+    return password_hash.hash(password)
 
 def verify_password(plain_password, hashed_password):
-    return password_hash. verify(plain_password, hashed_password)
+    return password_hash.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -32,7 +32,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     encoded_jwt = jwt.encode(to_encode, os.getenv("SECRET_KEY"), algorithm=os.getenv("ALGORITHM"))
     return encoded_jwt
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], conn):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -47,7 +47,15 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except InvalidTokenError:
         raise credentials_exception
 
-    user = get_user(username= token_data.username)
+    user = get_user(username= token_data.username, conn=conn)
     if user is None:
         raise credentials_exception
+    return user
+
+async def authenticate_user(username: str, password: str, conn):
+    user = await get_user(username, conn)
+    if not user:
+        return False
+    if not verify_password(password, user["password"]):
+        return False
     return user
