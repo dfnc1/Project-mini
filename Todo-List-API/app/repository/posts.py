@@ -2,11 +2,11 @@ import asyncpg
 
 from app.schemas import Post
 
-async def create_post(conn: asyncpg.Pool, todo: Post) :
+async def create_post(conn: asyncpg.Pool, data: Post) :
     return await conn.fetchrow("INSERT INTO posts (title, description) VALUES ($1, $2) RETURNING id, title, description",
                                todo.title, todo.description)
 
-async def update_post(conn: asyncpg.Pool, id: int, todo: Post):
+async def update_post(conn: asyncpg.Pool, id: int, data: Post):
     return await conn.fetchrow("UPDATE posts SET title = $1, description = $2 WHERE id=$3",
                                todo.title, todo.description, id)
 
