@@ -1,13 +1,12 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-app = FastAPI()
+from app.databases import get_pool, close_pool
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await get_pool()
+    yield
+    await close_pool()
+app = FastAPI(lifespan=lifespan)
