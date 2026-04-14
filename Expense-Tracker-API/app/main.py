@@ -10,3 +10,7 @@ async def lifespan(app: FastAPI):
     yield
     await close_pool()
 app = FastAPI(lifespan=lifespan)
+
+@app.get("/")
+async def root():
+    return {"hello": "world"}
