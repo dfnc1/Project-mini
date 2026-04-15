@@ -10,7 +10,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - .:/app
+      - .:/api
     networks:
       - app_network
 
@@ -26,7 +26,7 @@ services:
     volumes:
       - extrackapi:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d expense_tracker" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d extrackapi" ]
       interval: 5s
       timeout: 5s
       retries: 5
