@@ -14,7 +14,7 @@ async def get_pool():
 
 async def close_pool():
     global pool
-    await pool.close
+    await pool.close()
 
 async def get_db():
     global pool
