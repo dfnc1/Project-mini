@@ -3,8 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.repository.users import add_user
 from app.schemas import Token, Register, UserInDB
 from app.databases import get_db
+from app.security import get_password_hash, create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -13,7 +15,11 @@ async def signup(payload: Register, conn= Depends(get_db)):
     if not payload:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     try:
-        pass
+        new_user = UserInDB(name=payload.name, email=payload.email, hashed_password=get_password_hash(payload.password))
+        await add_user(payload=new_user, conn=conn)
+
+        access_token = create_access_token(data={"sub": payload.email})
+        return Token(access_token=access_token, token_type="bearer")
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
