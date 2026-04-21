@@ -9,7 +9,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import asyncpg
 
+from app.databases import get_db
 from app.schemas import TokenData
+from app.repository.users import get_user
 
 load_dotenv()
 password_hash = PasswordHash.recommended()
@@ -26,7 +28,7 @@ def create_access_token(data: dict):
     to_encode.update({"exp": datetime.now(timezone.utc) + timedelta(int(os.getenv("ACCES_TOKEN_EXPIRE_MINUTES")))})
     return jwt.encode(to_encode, key=os.getenv("SECRET_KEY"), algorithm=os.getenv("ALGORITHM"))
 
-async def get_current_user(token: Annotated[str, Depends()]):
+async def get_current_user(token: Annotated[str, Depends()], conn=Depends(get_db())):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -41,13 +43,13 @@ async def get_current_user(token: Annotated[str, Depends()]):
     except:
         raise credentials_exception
 
-    user = None
+    user = await get_user(email=token_data.email, conn=conn)
     if user is None:
         raise credentials_exception
     return user
 
 async def authenticate_user(email: str, password: str, conn: asyncpg.Pool):
-    user = None
+    user = await get_user(email=email, conn=conn)
     if not user:
         return False
     if not verify_password(password, user["password"]):
