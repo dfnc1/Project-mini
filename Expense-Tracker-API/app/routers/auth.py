@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.schemas import Token, Register
+from app.schemas import Token, Register, UserInDB
 from app.databases import get_db
 
 router = APIRouter(prefix="/auth", tags=["auth"])
