@@ -1,3 +1,5 @@
+from typing import List
+
 import asyncpg
 
 from app.schemas import Post
@@ -12,3 +14,6 @@ async def delete_post(id: int, conn: asyncpg.Pool) -> Post:
 async def update_post(id: int, data: Post, conn: asyncpg.Pool) -> Post:
     return await conn.fetchrow("UPDATE post SET description = $1, categories = $2, amount = $3 WHERE id = $4",
                                data.description, data.category, data.amount, id)
+
+async def get_posts(conn: asyncpg.Pool) -> List[Post]:
+    return await conn.fetch("SELECT * FROM post ORDER BY id DESC")
