@@ -15,5 +15,5 @@ async def update_post(id: int, data: Post, conn: asyncpg.Pool) -> Post:
     return await conn.fetchrow("UPDATE post SET description = $1, categories = $2, amount = $3 WHERE id = $4",
                                data.description, data.category, data.amount, id)
 
-async def get_posts(conn: asyncpg.Pool) -> List[Post]:
-    return await conn.fetch("SELECT * FROM post ORDER BY id DESC")
+async def get_posts(filter: str, conn: asyncpg.Pool) -> List[Post]:
+    return await conn.fetch("SELECT * FROM post WHERE categories = $1 ORDER BY id DESC ", filter)
