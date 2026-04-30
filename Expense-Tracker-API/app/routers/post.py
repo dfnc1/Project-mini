@@ -11,16 +11,28 @@ router = APIRouter(prefix="/post", tags=["post"])
 
 @router.post("/expense", status_code=status.HTTP_201_CREATED)
 async def create_expense(data: Post, current_user: Annotated[User, Depends(get_current_user)], conn= Depends(get_db)):
-    return await add_post(data= data, conn= conn)
+    try:
+        return await add_post(data= data, conn= conn)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @router.delete("/expense/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_expense(id: int, current_user: Annotated[User, Depends(get_current_user)], conn= Depends(get_db)):
-    return await delete_post(id= id, conn= conn)
+    try:
+        return await delete_post(id= id, conn= conn)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @router.patch("/expense/{id}", status_code=status.HTTP_200_OK)
 async def update_expense(id: int, data: Post, current_user: Annotated[User, Depends(get_current_user)], conn= Depends(get_db)):
-    return await update_post(id= id, data= data, conn= conn)
+    try:
+        return await update_post(id= id, data= data, conn= conn)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @router.get("/expense/", status_code=status.HTTP_200_OK)
 async def get_expense(filter: str, current_user: Annotated[User, Depends(get_current_user)],conn= Depends(get_db)):
-    return await get_posts(filter= filter, conn= conn)
+    try:
+        return await get_posts(filter= filter, conn= conn)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
