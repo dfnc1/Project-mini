@@ -31,8 +31,14 @@ async def update_expense(id: int, data: Post, current_user: Annotated[User, Depe
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @router.get("/expense/", status_code=status.HTTP_200_OK)
-async def get_expense(filter: str, current_user: Annotated[User, Depends(get_current_user)],conn= Depends(get_db)):
+async def get_expense(
+        current_user: Annotated[User, Depends(get_current_user)],
+        conn= Depends(get_db),
+        filter_date: int | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None
+):
     try:
-        return await get_posts(filter= filter, conn= conn)
+        return await get_posts(filter_date=filter_date ,start_date=start_date, end_date=end_date, conn= conn)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
